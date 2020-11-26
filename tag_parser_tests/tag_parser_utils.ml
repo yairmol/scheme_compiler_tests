@@ -1,6 +1,7 @@
 #use "topfind.ml";;
 
 #directory "..";;
+#directory "../..";;
 #use "tag-parser.ml";;
 #require "alcotest";;
 

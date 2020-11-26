@@ -1,5 +1,6 @@
 #use "reader.ml";;
 
+#directory "../..";;
 #require "alcotest";;
 let rec string_of_sexp se = 
     let string_of_number n = match n with
