@@ -31,13 +31,13 @@ let rec string_of_expr expr = match expr with
       | s -> "'" ^ (string_of_sexpr s))
     | Var v -> v
     | If (test, _then, _else) -> "(if " ^ (string_of_expr test) ^ " " ^ (string_of_expr _then) ^ " " ^ (string_of_expr _else) ^ ")"
-    | Seq exprs -> (List.fold_left (fun seq expr -> seq ^ " " ^ (string_of_expr expr)) "(begin " exprs) ^ ")"
+    | Seq exprs -> (List.fold_left (fun seq expr -> seq ^ " " ^ (string_of_expr expr)) "(begin" exprs) ^ ")"
     | Set (var, _val) -> "(set! " ^ (string_of_expr var) ^ (string_of_expr _val) ^ ")"
     | Def (var, _val) -> "(define " ^ (string_of_expr var) ^ (string_of_expr _val) ^ ")"
     | Or exprs -> (List.fold_left (fun seq expr -> seq ^ " " ^ (string_of_expr expr)) "(or " exprs) ^ ")"
     | LambdaSimple (args, expr) -> "(lambda " ^ (List.fold_left (fun arglist arg -> arglist ^ " " ^ arg) "(" args) ^ ") " ^ (string_of_expr expr) ^ ")"
     | LambdaOpt (args, arg, expr) -> "(lambda " ^ (if args = [] then arg else (List.fold_left (fun arglist arg -> arglist ^ " " ^ arg) "(" args) ^ ". " ^ arg ^ ") ") ^ (string_of_expr expr) ^ ")"
-    | Applic (expr, exprs) -> (List.fold_left (fun seq expr -> seq ^ " " ^ (string_of_expr expr)) "(" (expr :: exprs)) ^ ") "
+    | Applic (expr, exprs) -> (List.fold_left (fun seq expr -> seq ^ (if seq = "(" then "" else " ") ^ (string_of_expr expr)) "(" (expr :: exprs)) ^ ")"
 
 let sexp_testable = Alcotest.testable (fun ppf (se: sexpr) -> (Format.fprintf ppf "%s" (string_of_sexpr se))) sexpr_eq;;
 
