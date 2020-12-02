@@ -41,4 +41,20 @@ let rec string_of_expr expr = match expr with
 
 let sexp_testable = Alcotest.testable (fun ppf (se: sexpr) -> (Format.fprintf ppf "%s" (string_of_sexpr se))) sexpr_eq;;
 
-let expr_testable = Alcotest.testable (fun ppf expr -> (Format.fprintf ppf "%s" (string_of_expr expr))) expr_eq;;
+
+type expr_testable = 
+  | Expr of expr
+  | X_syntax_error
+
+
+let string_of_expr_testable expr_or_exception = match expr_or_exception with
+  | Expr expr -> (string_of_expr expr)
+  | X_syntax_error -> "X_syntax_error";;
+
+
+let expr_testable_eq expr_t_1, expr_t_2 = match (expr_t_1, expr_t_2) with
+  | (Expr expr1, Expr expr2) -> expr_eq expr1 expr2
+  | (X_syntax_error, X_syntax_error) -> true
+  | (_, _) -> false
+
+let expr_testable = Alcotest.testable (fun ppf expr -> (Format.fprintf ppf "%s" (string_of_expr_testable expr))) expr_testable_eq;;
