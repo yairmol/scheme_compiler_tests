@@ -62,7 +62,20 @@ let test_deep_nested_sequence () =
     let seq1 = Pair (Symbol "begin", Pair (Number (Float (512.23)), Pair (Char ('v'), Nil))) in
     let seq2 = Pair (Symbol "begin", Pair (String "just a string", Pair (Bool (true), Nil))) in
     let seq3 = Pair (Symbol "begin", Pair (Pair (Symbol "set!", Pair (Symbol "var", Pair (String "well", Nil))), Pair (Pair (Symbol "display", Pair (Symbol "var", Nil)), Nil))) in
-    let seq4 = Pair (Pair (Symbol "quote", Pair (Symbol "last_sequence!", Nil)))
+    let seq4 = Pair (Symbol "begin", Pair (Pair (Symbol "quote", Pair (Symbol "last_sequence!", Nil)), Nil)) in
+    Tag_Parser.tag_parse_expressions [
+    Pair (Symbol "begin", 
+      Pair (seq1,
+      Pair (seq2,
+      Pair (seq3,
+      Pair (seq4, Nil)))))] in
+  let expected = [Seq [
+    Const(Sexpr(Number(Float(512.23)))) ; Const(Sexpr(Char('v'))) ; 
+    Const(Sexpr(String "just a string")) ; Const(Sexpr(Bool true)) ; 
+    Set(Var "var", Const(Sexpr(String "well"))) ; Applic (Var "display", [Var "var"]) ;
+    Const(Sexpr(Symbol "last_sequence!"))
+  ]] in
+  Alcotest.(check (list expr_testable)) "same expr?" expected parsed;;
 
 let sequence_tag_parser_test_suite = [
   ("test empty sequence", test_empty_sequence);
@@ -70,6 +83,7 @@ let sequence_tag_parser_test_suite = [
   ("test single expression sequence 2", test_single_expr_sequence_2);
   ("test sequence with expressions", test_regular_sequence);
   ("test nested sequnce with depth 1", test_nested_sequence_depth_one);
+  ("test deep tested sequence", test_deep_nested_sequence)
 ]
 
 
