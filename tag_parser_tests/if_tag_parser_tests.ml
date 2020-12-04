@@ -81,10 +81,10 @@ let tag_constant_parser_tester_suite =[
   ("test simple if no else", test_simple_if_no_else);
   ("test nested if", test_nested_if);
   ("test nested if with no else", test_nested_if_no_else);
-  ("if_test_1", if_test_1);
-  ("if_test_2", if_test_2);
-  ("if_test_3", if_test_3);
-  ("if_test_4", if_test_4);
+  ("test cond expansion", if_test_1);
+  ("test cond expansion", if_test_2);
+  ("test cond expansion", if_test_3);
+  ("test and expansion", if_test_4);
 ]
 ;;
 

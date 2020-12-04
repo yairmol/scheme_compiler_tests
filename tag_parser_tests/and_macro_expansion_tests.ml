@@ -1,26 +1,46 @@
 #use "topfind";;
 
-#use "macro_expansions.ml";;
+#use "tag_parser_util.ml";;
 #require "alcotest";;
 
 let base_case () = 
-  let and_exp = Reader.read_sexprs "(and)" in
-  let expected = Reader.read_sexprs "#t" in
-    Alcotest.(check (list sexp_testable)) "same sexp?" expected (List.map and_expander and_exp);;
+  let and_exp = Tag_Parser.tag_parse_expressions [Pair (Symbol "and", Nil)] in
+  let expected = [Const (Sexpr (Bool true))] in
+    Alcotest.(check (list expr_testable)) "same sexp?" expected and_exp;;
 
 let base_case_2 () = 
-  let and_exp = Reader.read_sexprs "(and 1)" in
-  let expected = Reader.read_sexprs "1" in
-    Alcotest.(check (list sexp_testable)) "same sexp?" expected (List.map and_expander and_exp);;
+  let and_exp = Tag_Parser.tag_parse_expressions [Pair (Symbol "and", Pair (Number (Fraction (1, 1)), Nil))] in
+  let expected = [Const (Sexpr (Number (Fraction (1, 1))))] in
+    Alcotest.(check (list sexp_testable)) "same sexp?" expected and_exp;;
 
 let test_simple_and () = 
-  let and_exp = Reader.read_sexprs "(and a b c)" in
-  let expected = Reader.read_sexprs "(if a (if b c #f) #f)" in
+  let and_exp = Tag_Parser.tag_parse_expressions [Pair (Symbol "and", Pair (Symbol "a", Pair (Symbol "b", Pair (Symbol "c", Nil))))] in
+  let expected = [If (Var "a", If (Var "b", Var "c", Const (Sexpr (Bool false))), Const (Sexpr (Bool false)))] in
     Alcotest.(check (list sexp_testable)) "same sexp?" expected (List.map and_expander and_exp);;
 
 let test_complex_and () = 
-  let and_exp = Reader.read_sexprs "(and () (2 3) (#t #\\c \"hello\" . .sym?) #f)" in
-  let expected = Reader.read_sexprs "(if () (if (2 3) (if (#t #\\c \"hello\" . .sym?) #f #f) #f) #f)" in
+  let and_exp = Tag_Parser.tag_parse_expressions [
+    Pair (Symbol "and",
+      Pair (Nil,
+      Pair (Pair (Symbol "+", Pair (Number (Fraction (2, 1)), Pair (Number (Fraction (3, 1)), Nil))),
+      Pair (Pair (Symbol "quote", Pair (Pair (Bool true, Pair (Char 'c', Pair (String "hello", Symbol ".sym?"))), Nil)),
+     Pair (Bool false, Nil)))))] in
+  let expected = [
+    If (
+      Const (Sexpr Nil),
+      If (
+        Applic (Var "+", [Const (Sexpr (Number (Fraction (2, 1)))); Const (Sexpr (Number (Fraction (1, 1))))]),
+        If (
+          Const (Sexpr (Pair (Bool true, Pair (Char 'c', Pair (String "hello", Symbol ".sym?"))))),
+          Const (Sexpr (Bool false)),
+          Const (Sexpr (Bool false))
+        ),
+        Const (Sexpr (Bool false))  
+      ),
+      Const (Sexpr (Bool false))
+
+    )
+  ] in
     Alcotest.(check (list sexp_testable)) "same sexp?" expected (List.map and_expander and_exp);;
 
 

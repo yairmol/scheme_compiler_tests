@@ -3,6 +3,8 @@
 #require "alcotest";;
 
 (* tests for Applic *)
+
+(* let tests *)
 let applic_test_1 () = 
     let parsed = Tag_Parser.tag_parse_expressions [Pair (Symbol "let", Pair (Pair (Pair (Symbol "x", Pair (Number (Fraction (1, 1)), Nil)), Pair (Pair (Symbol "y", Pair (Number (Fraction (2, 1)), Nil)), Nil)), Pair (Symbol "y", Nil)))] in
     let expected = [Applic (LambdaSimple (["x"; "y"], Var "y"),[Const (Sexpr (Number (Fraction (1, 1)))); Const (Sexpr (Number (Fraction (2, 1))))])] in
@@ -43,6 +45,8 @@ let applic_test_10 () =
     let parsed = Tag_Parser.tag_parse_expressions [Pair (Symbol "let", Pair (Pair (Pair (Symbol "x", Pair (String "asd", Nil)), Nil), Pair (Pair (Symbol "begin", Pair (Symbol "x", Nil)), Nil)))] in
     let expected = [Applic (LambdaSimple (["x"], Var "x"), [Const (Sexpr (String "asd"))])] in
         Alcotest.(check (list expr_testable)) "same expr?" expected parsed;;
+
+(* quasiquote tests *)
 let applic_test_11 () = 
     let parsed = Tag_Parser.tag_parse_expressions [Pair (Symbol "quasiquote", Pair (Pair (Pair (Symbol "unquote", Pair (Symbol "x", Nil)), Nil), Nil)) ] in
     let expected = [Applic (Var "cons", [Var "x"; Const (Sexpr Nil)])] in
@@ -87,6 +91,8 @@ let applic_test_21 () =
     let parsed = Tag_Parser.tag_parse_expressions [Pair (Symbol "quasiquote", Pair(Pair(Pair(Pair (Pair (Symbol "unquote-splicing", Pair (Symbol "a", Nil)), Nil),Nil),Nil),Nil))] in
     let expected = [Applic (Var "cons",[Applic (Var "cons",[Applic (Var "append", [Var "a"; Const (Sexpr Nil)]); Const (Sexpr Nil)]);Const (Sexpr Nil)])] in
         Alcotest.(check (list expr_testable)) "same expr?" expected parsed;;
+
+(* let* tests *)
 let applic_test_22 () = 
     let parsed = Tag_Parser.tag_parse_expressions [Pair (Symbol "let*", Pair(Pair (Pair (Symbol "x", Pair (Number (Fraction (1, 1)), Nil)),Pair (Pair (Symbol "y", Pair (Number (Fraction (2, 1)), Nil)), Nil)),Pair (Symbol "y", Nil)))] in
     let expected = [Applic(LambdaSimple (["x"],Applic (LambdaSimple (["y"], Var "y"), [Const (Sexpr (Number (Fraction (2, 1))))])),[Const (Sexpr (Number (Fraction (1, 1))))])] in
@@ -127,6 +133,8 @@ let applic_test_31 () =
     let parsed = Tag_Parser.tag_parse_expressions [Pair (Symbol "let*", Pair (Pair (Pair (Symbol "x", Pair (String "asd", Nil)), Nil),Pair (Pair (Symbol "begin", Pair (Symbol "x", Nil)), Nil)))] in
     let expected = [Applic (LambdaSimple (["x"], Var "x"), [Const (Sexpr (String "asd"))])] in
         Alcotest.(check (list expr_testable)) "same expr?" expected parsed;;
+
+(* cond tests *)
 let applic_test_32 () = 
     let parsed = Tag_Parser.tag_parse_expressions [Pair (Symbol "cond", Pair (Pair (Symbol "a", Pair (Symbol "=>", Pair (Symbol "b", Nil))), Nil)) ] in
     let expected = [Applic(LambdaSimple (["value"; "f"],If (Var "value", Applic (Applic (Var "f", []), [Var "value"]),Const Void)),[Var "a"; LambdaSimple ([], Var "b")])] in
@@ -135,6 +143,8 @@ let applic_test_33 () =
     let parsed = Tag_Parser.tag_parse_expressions [Pair (Symbol "cond", Pair (Pair (Symbol "a", Pair (Symbol "=>", Pair (Symbol "b", Nil))),Pair(Pair (Symbol "else",Pair (Number (Fraction (1, 1)), Pair (Number (Fraction (2, 1)), Pair (Number (Fraction (3, 1)), Nil)))),Nil)))] in
     let expected = [Applic(LambdaSimple (["value"; "f"; "rest"],If (Var "value", Applic (Applic (Var "f", []), [Var "value"]),Applic (Var "rest", []))),[Var "a"; LambdaSimple ([], Var "b");LambdaSimple ([],Seq[Const (Sexpr (Number (Fraction (1, 1)))); Const (Sexpr (Number (Fraction (2, 1))));Const (Sexpr (Number (Fraction (3, 1))))])])] in
         Alcotest.(check (list expr_testable)) "same expr?" expected parsed;;
+
+(* regular applic *)
 let applic_test_34 () = 
     let parsed = Tag_Parser.tag_parse_expressions [Pair (String "should not", Pair (String "be", Pair (String "list", Nil)))] in
     let expected = [Applic (Const (Sexpr (String "should not")),[Const (Sexpr (String "be")); Const (Sexpr (String "list"))])] in

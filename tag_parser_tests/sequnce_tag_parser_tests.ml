@@ -77,13 +77,58 @@ let test_deep_nested_sequence () =
   ]] in
   Alcotest.(check (list expr_testable)) "same expr?" expected parsed;;
 
+let test_simple_implicit_sequence () = 
+  let parsed = Tag_Parser.tag_parse_expressions [
+    Pair (Symbol "lambda", Pair (Nil, 
+      Pair (Symbol "expr1",
+      Pair (Symbol "expr2",
+      Pair (Bool true,
+      Pair (Char 't', Nil))))))
+  ] in
+  let expected = [
+    LambdaSimple ([], 
+      Seq [
+        Var "expr1";
+        Var "expr2";
+        Const (Sexpr (Bool true));
+        Const (Sexpr (Char 't')) 
+      ])
+    ] in
+  Alcotest.(check (list expr_testable)) "same expr?" expected parsed;;
+  
+let test_nested_implicit_sequence_d1 () = 
+  let parsed = Tag_Parser.tag_parse_expressions [
+    Pair (Symbol "lambda", Pair (Nil, 
+      Pair (Symbol "expr1",
+      Pair (Symbol "expr2",
+      Pair (Pair (Symbol "begin",
+        Pair (Symbol "inner",
+        Pair (Number (Float 3.1), Nil))),
+      Pair (Bool true,
+      Pair (Char 't', Nil)))))))
+  ] in
+  let expected = [
+    LambdaSimple ([], 
+      Seq [
+        Var "expr1";
+        Var "expr2";
+        Var "inner";
+        Const (Sexpr (Number (Float 3.1)));
+        Const (Sexpr (Bool true));
+        Const (Sexpr (Char 't')); 
+      ])
+    ] in
+  Alcotest.(check (list expr_testable)) "same expr?" expected parsed;;
+  
 let sequence_tag_parser_test_suite = [
   ("test empty sequence", test_empty_sequence);
   ("test single expression sequence 1", test_single_expr_sequence);
   ("test single expression sequence 2", test_single_expr_sequence_2);
   ("test sequence with expressions", test_regular_sequence);
   ("test nested sequnce with depth 1", test_nested_sequence_depth_one);
-  ("test deep tested sequence", test_deep_nested_sequence)
+  ("test deep tested sequence", test_deep_nested_sequence);
+  ("test simple implicit sequence", test_simple_implicit_sequence);
+  ("test nested implicit dequence", test_nested_implicit_sequence_d1);
 ]
 
 
