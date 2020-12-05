@@ -15,7 +15,12 @@ let string_of_sexpr sexpr =
     | Number(n) -> string_of_number n
     | Char(c) ->  "#\\" ^ (String.make 1 c)
     | String(s) -> "\"" ^ s ^ "\""
-    | Symbol(s) -> s
+    | Symbol(s) -> (match s with
+      | "quote" -> "'"
+      | "quasiquote" -> "`"
+      | "unquote" -> ","
+      | "unquote-splicing" -> ",@"
+      | s -> s)
     | Pair(se1, Nil) -> (if inside then "" else "(") ^ (string_of_sexpr1 se1 false) ^ ")"
     | Pair(se1, Pair(se2, se3)) -> (if inside then "" else "(") ^ (string_of_sexpr1 se1 false) ^ " " ^ (string_of_sexpr1 (Pair (se2, se3)) true)
     | Pair(se1, se2) -> (if inside then "" else "(") ^ (string_of_sexpr1 se1 false) ^ " . " ^ (string_of_sexpr1 se2 false) ^ ")" in
