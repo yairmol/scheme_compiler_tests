@@ -83,10 +83,6 @@ let applic_test_19 () =
     let parsed = Tag_Parser.tag_parse_expressions [Pair (Symbol "quasiquote", Pair(Pair (Pair (Symbol "unquote-splicing", Pair (Symbol "a", Nil)),Pair (Symbol "unquote", Pair (Symbol "b", Nil))),Nil))] in
     let expected = [Applic (Var "append", [Var "a"; Var "b"])] in
         Alcotest.(check (list expr_testable)) "same expr?" expected parsed;;
-let applic_test_20 () = 
-    let parsed = Tag_Parser.tag_parse_expressions [Pair (Symbol "quasiquote", Pair(Pair (Pair (Symbol "unquote", Pair (Symbol "a", Nil)),Pair (Symbol "unquote-splicing", Pair (Symbol "b", Nil))),Nil))] in
-    let expected = [Applic (Var "cons", [Var "a"; Var "b"])] in
-        Alcotest.(check (list expr_testable)) "same expr?" expected parsed;;
 let applic_test_21 () = 
     let parsed = Tag_Parser.tag_parse_expressions [Pair (Symbol "quasiquote", Pair(Pair(Pair(Pair (Pair (Symbol "unquote-splicing", Pair (Symbol "a", Nil)), Nil),Nil),Nil),Nil))] in
     let expected = [Applic (Var "cons",[Applic (Var "cons",[Applic (Var "append", [Var "a"; Const (Sexpr Nil)]); Const (Sexpr Nil)]);Const (Sexpr Nil)])] in
@@ -169,7 +165,6 @@ let applic_test_suite = [
     ("applic_test_17", applic_test_17);
     ("applic_test_18", applic_test_18);
     ("applic_test_19", applic_test_19);
-    ("applic_test_20", applic_test_20);
     ("applic_test_21", applic_test_21);
     ("applic_test_22", applic_test_22);
     ("applic_test_23", applic_test_23);
