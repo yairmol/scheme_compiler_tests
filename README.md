@@ -5,9 +5,9 @@ a repository for storing the tests of the scheme compiler
 1. clone this repositry into your compiler folder (the folder in which the reader and tag-parser files are).
 2. if you don't have alcotest installed, run `opam install alcotest`
 3. run the tests by running the command `ocaml <alcotest-test-file-name>` where alcotest-test-file-name can be one of the following:
-    - [alcotest_reader_tests.ml]('./reader_tests/alcotest_reader_tests.ml)
-    - [alcotest_tag_parser_tests.ml]('./tag_parser_tests/alcotest_tag_parser_tests.ml)
-    - [alcotest_semantic_analyser_tests.ml]('./semantics_tests/alcotest_semantic_analyser_tests.ml)
+    - [alcotest_reader_tests.ml](./reader_tests/alcotest_reader_tests.ml)
+    - [alcotest_tag_parser_tests.ml](./tag_parser_tests/alcotest_tag_parser_tests.ml)
+    - [alcotest_semantic_analyser_tests.ml](./semantics_tests/alcotest_semantic_analyser_tests.ml)
 
 ### Alcotest Doesn't work
 If the tests don't run because ocaml can't find alcotest, then you can either:
@@ -20,9 +20,9 @@ The test cases defines as a 3-tuple such that the first element is the test desc
 ("description", <reader/tag-parser/semantic-analyzer input>, <expected-output>)
 ```
 the test cases are specified inside a list in the appropriate file, for example 
-- [reader_tests.ml]('./reader_tests/reader_tests.ml)
-- [tag_parser_tests.ml]('./tag_parser_tests/tag_parser_tests.ml)
-- [semantic_analyser_tests.ml]('./semantics_tests/semantic_analyser_tests.ml)
+- [reader_tests.ml](./reader_tests/reader_tests.ml)
+- [tag_parser_tests.ml](./tag_parser_tests/tag_parser_tests.ml)
+- [semantic_analyser_tests.ml](./semantics_tests/semantic_analyser_tests.ml)
 
 to add a new test case just add a new item to the appropriate list
 
