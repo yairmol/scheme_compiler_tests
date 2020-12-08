@@ -47,7 +47,7 @@ let sexp_testable = Alcotest.testable (fun ppf (se: sexpr) -> (Format.fprintf pp
 let expr_testable = Alcotest.testable (fun ppf expr -> (Format.fprintf ppf "%s" (string_of_expr expr))) expr_eq;;
 
 let map_test_suite_to_alcotest_test_suite test_suite = List.map (fun (name, input, expected) -> 
-  (name, fun () -> Alcotest.(check (list expr_testable)) "same expression?" (Tag_Parser.tag_parse_expressions input) expected)) test_suite;;
+  (name, fun () -> Alcotest.(check (list expr_testable)) "same expression?" expected (Tag_Parser.tag_parse_expressions input))) test_suite;;
 
 let () =
   let open Alcotest in
