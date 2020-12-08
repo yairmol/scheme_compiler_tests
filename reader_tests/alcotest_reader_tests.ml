@@ -17,8 +17,8 @@ let rec string_of_sexp se =
 
 let sexp_testable = Alcotest.testable (fun ppf (se: sexpr) -> (Format.fprintf ppf "%s" (string_of_sexp se))) sexpr_eq;;
 
-let map_test_suite_to_alcotest_test_suite test_suite = List.map (fun (name, (input: (sexpr list)), (expected: (sexpr list))) -> 
-  (name, fun () -> Alcotest.(check (list sexp_testable)) "same sexpression?" input expected)) test_suite;;
+let map_test_suite_to_alcotest_test_suite test_suite = List.map (fun (name, expected, input) -> 
+  (name, fun () -> Alcotest.(check (list sexp_testable)) "same sexpression?" (Reader.read_sexprs input) expected)) test_suite;;
 
 let () =
   let open Alcotest in

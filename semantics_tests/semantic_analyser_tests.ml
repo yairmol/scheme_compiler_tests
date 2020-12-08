@@ -1,7 +1,12 @@
-let semantic_analyzer_tests = [
+#use "topfind";;
+#directory "../";;
+#directory "../../";;
+#use "semantic-analyser.ml";;
+
+let semantic_analyzer_tests_suite = [
   ("semantic test 1",
-    LambdaSimple ([], Const (Sexpr (Number (Int 1)))),
-    LambdaSimple' ([], Const' (Sexpr (Number (Int 1)))));
+    LambdaSimple ([], Const (Sexpr (Number (Fraction (1, 1))))),
+    LambdaSimple' ([], Const' (Sexpr (Number (Fraction (1, 1))))));
   ("semantic test 2",
     Const
       (Sexpr
@@ -17,7 +22,7 @@ let semantic_analyzer_tests = [
                      Pair (Nil,
                       Pair
                        (Pair (Symbol "set!",
-                         Pair (Symbol "x", Pair (Number (Int 1), Nil))),
+                         Pair (Symbol "x", Pair (Number (Fraction (1, 1)), Nil))),
                        Nil))),
                    Nil)))),
               Nil))),
@@ -37,7 +42,7 @@ let semantic_analyzer_tests = [
                     Pair (Nil,
                      Pair
                       (Pair (Symbol "set!",
-                        Pair (Symbol "x", Pair (Number (Int 1), Nil))),
+                        Pair (Symbol "x", Pair (Number (Fraction (1, 1)), Nil))),
                       Nil))),
                   Nil)))),
              Nil))),
@@ -45,22 +50,22 @@ let semantic_analyzer_tests = [
   ("semantic test 3",
     Applic
       (LambdaSimple (["x"],
-        If (Applic (Var "x", [Const (Sexpr (Number (Int 1)))]),
-         Applic (Var "x", [Const (Sexpr (Number (Int 2)))]),
+        If (Applic (Var "x", [Const (Sexpr (Number (Fraction (1, 1))))]),
+         Applic (Var "x", [Const (Sexpr (Number (Fraction (2, 1))))]),
          Applic
-          (LambdaSimple (["x"], Set (Var "x", Const (Sexpr (Number (Int 0))))),
-          [Const (Sexpr (Number (Int 3)))]))),
+          (LambdaSimple (["x"], Set (Var "x", Const (Sexpr (Number (Fraction (0, 1)))))),
+          [Const (Sexpr (Number (Fraction (3, 1))))]))),
       [LambdaSimple (["x"], Var "x")]),
     
     Applic'
      (LambdaSimple' (["x"],
        If'
-        (Applic' (Var' (VarParam ("x", 0)), [Const' (Sexpr (Number (Int 1)))]),
-        ApplicTP' (Var' (VarParam ("x", 0)), [Const' (Sexpr (Number (Int 2)))]),
+        (Applic' (Var' (VarParam ("x", 0)), [Const' (Sexpr (Number (Fraction (1, 1))))]),
+        ApplicTP' (Var' (VarParam ("x", 0)), [Const' (Sexpr (Number (Fraction (2, 1))))]),
         ApplicTP'
          (LambdaSimple' (["x"],
-           Set' (Var' (VarParam ("x", 0)), Const' (Sexpr (Number (Int 0))))),
-         [Const' (Sexpr (Number (Int 3)))]))),
+           Set' ((VarParam ("x", 0)), Const' (Sexpr (Number (Fraction (0, 1)))))),
+         [Const' (Sexpr (Number (Fraction (3, 1))))]))),
      [LambdaSimple' (["x"], Var' (VarParam ("x", 0)))]));
   ("semantic test 4",
     LambdaSimple (["x"],
@@ -71,12 +76,12 @@ let semantic_analyzer_tests = [
             (LambdaSimple ([],
               Applic (LambdaSimple ([], Applic (Var "+", [Var "x"; Var "z"])), [])),
             [])),
-         [Var "x"; Const (Sexpr (Number (Int 1)))]);
+         [Var "x"; Const (Sexpr (Number (Fraction (1, 1))))]);
         LambdaSimple ([], Set (Var "x", Var "w")); Applic (Var "w", [Var "w"])]),
     
     LambdaSimple' (["x"],
      Seq'
-      [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+      [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
        Or'
         [Applic'
           (LambdaOpt' (["y"], "z",
@@ -88,7 +93,7 @@ let semantic_analyzer_tests = [
                    [BoxGet' (VarBound ("x", 2, 0)); Var' (VarBound ("z", 1, 1))])),
                 [])),
              [])),
-          [BoxGet' (VarParam ("x", 0)); Const' (Sexpr (Number (Int 1)))]);
+          [BoxGet' (VarParam ("x", 0)); Const' (Sexpr (Number (Fraction (1, 1))))]);
          LambdaSimple' ([], BoxSet' (VarBound ("x", 0, 0), Var' (VarFree "w")));
          ApplicTP' (Var' (VarFree "w"), [Var' (VarFree "w")])]]));
   ("semantic test 5",
@@ -97,7 +102,7 @@ let semantic_analyzer_tests = [
        (LambdaSimple (["x"],
          Seq
           [Set (Var "x", Var "y");
-           LambdaSimple ([], Set (Var "x", Const (Sexpr (Number (Int 1)))))]),
+           LambdaSimple ([], Set (Var "x", Const (Sexpr (Number (Fraction (1, 1))))))]),
        [Const (Sexpr (Symbol "a"))]),
       LambdaSimple (["x"], Set (Var "x", Var "y"))),
     
@@ -105,11 +110,11 @@ let semantic_analyzer_tests = [
      Applic'
       (LambdaSimple' (["x"],
         Seq'
-         [Set' (Var' (VarParam ("x", 0)), Var' (VarFree "y"));
+         [Set' ((VarParam ("x", 0)), Var' (VarFree "y"));
           LambdaSimple' ([],
-           Set' (Var' (VarBound ("x", 0, 0)), Const' (Sexpr (Number (Int 1)))))]),
+           Set' ((VarBound ("x", 0, 0)), Const' (Sexpr (Number (Fraction (1, 1))))))]),
       [Const' (Sexpr (Symbol "a"))]),
-     LambdaSimple' (["x"], Set' (Var' (VarParam ("x", 0)), Var' (VarFree "y")))));
+     LambdaSimple' (["x"], Set' ((VarParam ("x", 0)), Var' (VarFree "y")))));
   ("semantic test 6",
     LambdaOpt (["x"; "y"; "z"], "w",
       Seq
@@ -125,7 +130,7 @@ let semantic_analyzer_tests = [
        ApplicTP'
         (LambdaSimple' ([],
           Seq'
-           [Set' (Var' (VarBound ("w", 0, 3)), Var' (VarBound ("w", 0, 3)));
+           [Set' ((VarBound ("w", 0, 3)), Var' (VarBound ("w", 0, 3)));
             ApplicTP'
              (Applic' (Var' (VarBound ("y", 0, 1)),
                [Var' (VarBound ("x", 0, 0))]),
@@ -138,17 +143,17 @@ let semantic_analyzer_tests = [
          LambdaOpt ([], "x",
           Seq
            [Var "x";
-            LambdaOpt ([], "y", Set (Var "y", Const (Sexpr (Number (Int 1)))))])),
+            LambdaOpt ([], "y", Set (Var "y", Const (Sexpr (Number (Fraction (1, 1))))))])),
        [])),
     
-    Def' (Var' (VarFree "a"),
+    Def' ((VarFree "a"),
      Applic'
       (LambdaSimple' ([],
         LambdaOpt' ([], "x",
          Seq'
           [Var' (VarParam ("x", 0));
            LambdaOpt' ([], "y",
-            Set' (Var' (VarParam ("y", 0)), Const' (Sexpr (Number (Int 1)))))])),
+            Set' ((VarParam ("y", 0)), Const' (Sexpr (Number (Fraction (1, 1))))))])),
       [])));
   ("semantic test 8",
     LambdaSimple (["x"; "y"],
@@ -162,8 +167,8 @@ let semantic_analyzer_tests = [
     
     LambdaSimple' (["x"; "y"],
      Seq'
-      [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
-       Set' (Var' (VarParam ("y", 1)), Box' (VarParam ("y", 1)));
+      [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+       Set' ((VarParam ("y", 1)), Box' (VarParam ("y", 1)));
        Seq'
         [Applic' (BoxGet' (VarParam ("x", 0)), [BoxGet' (VarParam ("y", 1))]);
          LambdaSimple' ([],
@@ -181,10 +186,10 @@ let semantic_analyzer_tests = [
         Applic
          (LambdaSimple (["x"],
            Seq
-            [Set (Var "x", Const (Sexpr (Number (Int 1))));
+            [Set (Var "x", Const (Sexpr (Number (Fraction (1, 1)))));
              LambdaSimple ([], Var "x")]),
-         [Const (Sexpr (Number (Int 2)))]);
-        Applic (LambdaOpt ([], "x", Var "x"), [Const (Sexpr (Number (Int 3)))])]),
+         [Const (Sexpr (Number (Fraction (2, 1))))]);
+        Applic (LambdaOpt ([], "x", Var "x"), [Const (Sexpr (Number (Fraction (3, 1))))])]),
     
     LambdaSimple' ([],
      Seq'
@@ -192,29 +197,29 @@ let semantic_analyzer_tests = [
        Applic'
         (LambdaSimple' (["x"],
           Seq'
-           [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+           [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
             Seq'
-             [BoxSet' (VarParam ("x", 0), Const' (Sexpr (Number (Int 1))));
+             [BoxSet' (VarParam ("x", 0), Const' (Sexpr (Number (Fraction (1, 1)))));
               LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)))]]),
-        [Const' (Sexpr (Number (Int 2)))]);
+        [Const' (Sexpr (Number (Fraction (2, 1))))]);
        ApplicTP' (LambdaOpt' ([], "x", Var' (VarParam ("x", 0))),
-        [Const' (Sexpr (Number (Int 3)))])]));
+        [Const' (Sexpr (Number (Fraction (3, 1))))])]));
   ("semantic test 10",
     LambdaSimple (["x"; "y"; "z"],
       Seq
        [LambdaSimple (["y"],
          Seq
-          [Set (Var "x", Const (Sexpr (Number (Int 5))));
+          [Set (Var "x", Const (Sexpr (Number (Fraction (5, 1)))));
            Applic (Var "+", [Var "x"; Var "y"])]);
         Applic (Var "+", [Var "x"; Var "y"; Var "z"])]),
     
     LambdaSimple' (["x"; "y"; "z"],
      Seq'
-      [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+      [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
        Seq'
         [LambdaSimple' (["y"],
           Seq'
-           [BoxSet' (VarBound ("x", 0, 0), Const' (Sexpr (Number (Int 5))));
+           [BoxSet' (VarBound ("x", 0, 0), Const' (Sexpr (Number (Fraction (5, 1)))));
             ApplicTP' (Var' (VarFree "+"),
              [BoxGet' (VarBound ("x", 0, 0)); Var' (VarParam ("y", 0))])]);
          ApplicTP' (Var' (VarFree "+"),
@@ -225,7 +230,7 @@ let semantic_analyzer_tests = [
     
     LambdaSimple' (["x"],
      Seq'
-      [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+      [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
        BoxSet' (VarParam ("x", 0),
         Applic' (LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0))), []))]));
   ("semantic test 12",
@@ -244,12 +249,12 @@ let semantic_analyzer_tests = [
     Applic' (Var' (VarFree "y"),
      [LambdaSimple' (["y"],
        Seq'
-        [Set' (Var' (VarParam ("y", 0)), Box' (VarParam ("y", 0)));
+        [Set' ((VarParam ("y", 0)), Box' (VarParam ("y", 0)));
          Seq'
-          [Set' (Var' (VarFree "a"),
+          [Set' ((VarFree "a"),
             LambdaSimple' (["b"],
              ApplicTP' (Var' (VarFree "a"), [Var' (VarParam ("b", 0))])));
-           Set' (Var' (VarFree "t"),
+           Set' ((VarFree "t"),
             LambdaSimple' (["x"],
              Seq'
               [BoxSet' (VarBound ("y", 0, 0),
@@ -267,9 +272,9 @@ let semantic_analyzer_tests = [
     LambdaSimple' (["x"],
      Seq'
       [LambdaSimple' (["x"],
-        Set' (Var' (VarParam ("x", 0)), Var' (VarParam ("x", 0))));
+        Set' ((VarParam ("x", 0)), Var' (VarParam ("x", 0))));
        LambdaSimple' (["x"],
-        Set' (Var' (VarParam ("x", 0)), Var' (VarParam ("x", 0))))]));
+        Set' ((VarParam ("x", 0)), Var' (VarParam ("x", 0))))]));
   ("semantic test 14",
     LambdaSimple (["x"; "y"],
       Seq
@@ -278,8 +283,8 @@ let semantic_analyzer_tests = [
     
     LambdaSimple' (["x"; "y"],
      Seq'
-      [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
-       Set' (Var' (VarParam ("y", 1)), Box' (VarParam ("y", 1)));
+      [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+       Set' ((VarParam ("y", 1)), Box' (VarParam ("y", 1)));
        Seq'
         [LambdaSimple' ([],
           BoxSet' (VarBound ("x", 0, 0), BoxGet' (VarBound ("y", 0, 1))));
@@ -288,13 +293,13 @@ let semantic_analyzer_tests = [
   ("semantic test 15",
     LambdaOpt ([], "x",
       Seq
-       [LambdaSimple (["x"], Set (Var "x", Const (Sexpr (Number (Int 1)))));
+       [LambdaSimple (["x"], Set (Var "x", Const (Sexpr (Number (Fraction (1, 1))))));
         Applic (Var "car", [Var "x"])]),
     
     LambdaOpt' ([], "x",
      Seq'
       [LambdaSimple' (["x"],
-        Set' (Var' (VarParam ("x", 0)), Const' (Sexpr (Number (Int 1)))));
+        Set' ((VarParam ("x", 0)), Const' (Sexpr (Number (Fraction (1, 1))))));
        ApplicTP' (Var' (VarFree "car"), [Var' (VarParam ("x", 0))])]));
   ("semantic test 16",
     If (Var "x", Applic (Var "x", []), Var "x"),
@@ -331,21 +336,21 @@ let semantic_analyzer_tests = [
     LambdaSimple' (["x"],
      Seq'
       [Applic' (Var' (VarParam ("x", 0)), []);
-       Set' (Var' (VarParam ("x", 0)), Applic' (Var' (VarParam ("x", 0)), []))]));
+       Set' ((VarParam ("x", 0)), Applic' (Var' (VarParam ("x", 0)), []))]));
   ("semantic test 20",
     LambdaSimple (["x"],
       Applic
        (LambdaSimple (["y"],
-         Seq [Set (Var "x", Applic (Var "y", [])); Const (Sexpr (Number (Int 2)))]),
+         Seq [Set (Var "x", Applic (Var "y", [])); Const (Sexpr (Number (Fraction (2, 1))))]),
        [])),
     
     LambdaSimple' (["x"],
      ApplicTP'
       (LambdaSimple' (["y"],
         Seq'
-         [Set' (Var' (VarBound ("x", 0, 0)),
+         [Set' ((VarBound ("x", 0, 0)),
            Applic' (Var' (VarParam ("y", 0)), []));
-          Const' (Sexpr (Number (Int 2)))]),
+          Const' (Sexpr (Number (Fraction (2, 1))))]),
       [])));
   ("semantic test 21",
     Const(Void),
@@ -356,20 +361,20 @@ let semantic_analyzer_tests = [
        [Var "x";
         LambdaSimple (["x"],
          Seq
-          [Set (Var "x", Const (Sexpr (Number (Int 1))));
+          [Set (Var "x", Const (Sexpr (Number (Fraction (1, 1)))));
            LambdaSimple ([], Var "x")]);
         LambdaSimple ([], Set (Var "x", Var "x"))]),
     
     LambdaSimple' (["x"],
      Seq'
-      [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+      [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
        Seq'
         [BoxGet' (VarParam ("x", 0));
          LambdaSimple' (["x"],
           Seq'
-           [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+           [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
             Seq'
-             [BoxSet' (VarParam ("x", 0), Const' (Sexpr (Number (Int 1))));
+             [BoxSet' (VarParam ("x", 0), Const' (Sexpr (Number (Fraction (1, 1)))));
               LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)))]]);
          LambdaSimple' ([],
           BoxSet' (VarBound ("x", 0, 0), BoxGet' (VarBound ("x", 0, 0))))]]));
@@ -385,12 +390,12 @@ let semantic_analyzer_tests = [
     
     LambdaSimple' (["x"],
      Seq'
-      [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+      [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
        Seq'
         [BoxGet' (VarParam ("x", 0));
          LambdaSimple' (["x"],
           Seq'
-           [Set' (Var' (VarFree "y"), Var' (VarParam ("x", 0)));
+           [Set' ((VarFree "y"), Var' (VarParam ("x", 0)));
             LambdaSimple' ([], Var' (VarBound ("x", 0, 0)))]);
          LambdaSimple' ([],
           BoxSet' (VarBound ("x", 0, 0), BoxGet' (VarBound ("x", 0, 0))))]]));
@@ -470,7 +475,7 @@ let semantic_analyzer_tests = [
     LambdaSimple (["x"], Set (Var "x", Applic (Var "f", [Var "y"]))),
     
     LambdaSimple' (["x"],
-     Set' (Var' (VarParam ("x", 0)),
+     Set' ((VarParam ("x", 0)),
       Applic' (Var' (VarFree "f"), [Var' (VarFree "y")]))));
   ("semantic test 32",
     LambdaSimple ([],
@@ -479,7 +484,7 @@ let semantic_analyzer_tests = [
        [LambdaSimple (["y"], Applic (Var "g", [Var "x"; Var "y"]))]))),
     
     LambdaSimple' ([],
-     Set' (Var' (VarFree "x"),
+     Set' ((VarFree "x"),
       Applic' (Var' (VarFree "f"),
        [LambdaSimple' (["y"],
          ApplicTP' (Var' (VarFree "g"),
@@ -522,7 +527,7 @@ let semantic_analyzer_tests = [
     
     LambdaSimple' (["x"],
      Seq'
-      [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+      [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
        ApplicTP' (Var' (VarFree "list"),
         [LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)));
          LambdaSimple' (["y"],
@@ -539,7 +544,7 @@ let semantic_analyzer_tests = [
      Applic (Var "+",
       [Var "x"; Var "y";
        LambdaSimple (["z"],
-        Applic (Var "+", [Var "z"; Var "x"; Const (Sexpr (Number (Int 1)))]))])),
+        Applic (Var "+", [Var "z"; Var "x"; Const (Sexpr (Number (Fraction (1, 1))))]))])),
     
     LambdaSimple' (["x"; "y"; "z"],
      ApplicTP' (Var' (VarFree "+"),
@@ -547,20 +552,20 @@ let semantic_analyzer_tests = [
        LambdaSimple' (["z"],
         ApplicTP' (Var' (VarFree "+"),
          [Var' (VarParam ("z", 0)); Var' (VarBound ("x", 0, 0));
-          Const' (Sexpr (Number (Int 1)))]))])));
+          Const' (Sexpr (Number (Fraction (1, 1))))]))])));
   ("semantic test 38",
     LambdaSimple (["x"; "y"; "z"],
      Applic (Var "+",
       [Var "x"; Var "y";
        LambdaSimple (["z"],
-        Applic (Var "+", [Var "z"; Const (Sexpr (Number (Int 2)))]))])),
+        Applic (Var "+", [Var "z"; Const (Sexpr (Number (Fraction (2, 1))))]))])),
     
     LambdaSimple' (["x"; "y"; "z"],
      ApplicTP' (Var' (VarFree "+"),
       [Var' (VarParam ("x", 0)); Var' (VarParam ("y", 1));
        LambdaSimple' (["z"],
         ApplicTP' (Var' (VarFree "+"),
-         [Var' (VarParam ("z", 0)); Const' (Sexpr (Number (Int 2)))]))])));
+         [Var' (VarParam ("z", 0)); Const' (Sexpr (Number (Fraction (2, 1))))]))])));
   ("semantic test 39",
     LambdaOpt (["x"; "y"], "z",
      Applic (Var "+",
@@ -641,10 +646,10 @@ let semantic_analyzer_tests = [
        [LambdaSimple ([], Var "x"); LambdaSimple ([], Var "y");
         LambdaSimple ([], Set (Var "x", Var "y"))])),
     
-    Def' (Var' (VarFree "foo3"),
+    Def' ((VarFree "foo3"),
      LambdaOpt' (["x"], "y",
       Seq'
-       [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+       [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
         Seq'
          [LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)));
           LambdaSimple' ([], Var' (VarBound ("y", 0, 1)));
@@ -656,10 +661,10 @@ let semantic_analyzer_tests = [
       Applic (Var "list",
        [LambdaSimple ([], Var "x"); LambdaSimple (["y"], Set (Var "x", Var "y"))]))),
     
-    Def' (Var' (VarFree "test"),
+    Def' ((VarFree "test"),
      LambdaSimple' (["x"],
       Seq'
-       [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+       [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
         ApplicTP' (Var' (VarFree "list"),
          [LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)));
           LambdaSimple' (["y"],
@@ -669,9 +674,9 @@ let semantic_analyzer_tests = [
      LambdaSimple (["x"; "y"],
       Set (Var "x", Applic (Var "*", [Var "x"; Var "y"])))),
     
-    Def' (Var' (VarFree "test"),
+    Def' ((VarFree "test"),
      LambdaSimple' (["x"; "y"],
-      Set' (Var' (VarParam ("x", 0)),
+      Set' ((VarParam ("x", 0)),
        Applic' (Var' (VarFree "*"),
         [Var' (VarParam ("x", 0)); Var' (VarParam ("y", 1))])))));
   ("semantic test 46",
@@ -680,13 +685,13 @@ let semantic_analyzer_tests = [
       If (Var "x", LambdaSimple ([], Set (Var "y", Var "x")),
        LambdaSimple (["z"], Set (Var "x", Var "z"))))),
     
-    Def' (Var' (VarFree "test"),
+    Def' ((VarFree "test"),
      LambdaSimple' (["x"; "y"],
       Seq'
-       [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+       [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
         If' (BoxGet' (VarParam ("x", 0)),
          LambdaSimple' ([],
-          Set' (Var' (VarBound ("y", 0, 1)), BoxGet' (VarBound ("x", 0, 0)))),
+          Set' ((VarBound ("y", 0, 1)), BoxGet' (VarBound ("x", 0, 0)))),
          LambdaSimple' (["z"],
           BoxSet' (VarBound ("x", 0, 0), Var' (VarParam ("z", 0)))))])));
   ("semantic test 47",
@@ -695,16 +700,16 @@ let semantic_analyzer_tests = [
       Applic (Var "list",
        [LambdaSimple ([],
          Set (Var "x",
-          Applic (Var "+", [Var "x"; Const (Sexpr (Number (Int 1)))])));
+          Applic (Var "+", [Var "x"; Const (Sexpr (Number (Fraction (1, 1))))])));
         LambdaSimple ([], Var "y")]))),
     
-    Def' (Var' (VarFree "test"),
+    Def' ((VarFree "test"),
      LambdaSimple' (["x"; "y"],
       ApplicTP' (Var' (VarFree "list"),
        [LambdaSimple' ([],
-         Set' (Var' (VarBound ("x", 0, 0)),
+         Set' ((VarBound ("x", 0, 0)),
           Applic' (Var' (VarFree "+"),
-           [Var' (VarBound ("x", 0, 0)); Const' (Sexpr (Number (Int 1)))])));
+           [Var' (VarBound ("x", 0, 0)); Const' (Sexpr (Number (Fraction (1, 1))))])));
         LambdaSimple' ([], Var' (VarBound ("y", 0, 1)))]))));
   ("semantic test 48",
     Def (Var "test",
@@ -715,7 +720,7 @@ let semantic_analyzer_tests = [
         If (Applic (Var "eq?", [Var "op"; Const (Sexpr (Symbol "write"))]),
          LambdaSimple (["val"], Set (Var "x", Var "val")), Const Void))))),
     
-    Def' (Var' (VarFree "test"),
+    Def' ((VarFree "test"),
      LambdaSimple' (["x"],
       LambdaSimple' (["op"],
        If'
@@ -726,7 +731,7 @@ let semantic_analyzer_tests = [
          (Applic' (Var' (VarFree "eq?"),
            [Var' (VarParam ("op", 0)); Const' (Sexpr (Symbol "write"))]),
          LambdaSimple' (["val"],
-          Set' (Var' (VarBound ("x", 1, 0)), Var' (VarParam ("val", 0)))),
+          Set' ((VarBound ("x", 1, 0)), Var' (VarParam ("val", 0)))),
          Const' Void))))));
   ("semantic test 49",
     Def (Var "test",
@@ -736,27 +741,27 @@ let semantic_analyzer_tests = [
          Applic (Var "cons",
           [LambdaSimple ([], Var "x");
            Applic (Var "cons", [Set (Var "x", Var "y"); Const (Sexpr Nil)])])),
-       [Const (Sexpr (Number (Int 1)))]))),
+       [Const (Sexpr (Number (Fraction (1, 1))))]))),
     
-    Def' (Var' (VarFree "test"),
+    Def' ((VarFree "test"),
      LambdaSimple' (["x"],
       ApplicTP'
        (LambdaSimple' (["y"],
          ApplicTP' (Var' (VarFree "cons"),
           [LambdaSimple' ([], Var' (VarBound ("x", 1, 0)));
            Applic' (Var' (VarFree "cons"),
-            [Set' (Var' (VarBound ("x", 0, 0)), Var' (VarParam ("y", 0)));
+            [Set' ((VarBound ("x", 0, 0)), Var' (VarParam ("y", 0)));
              Const' (Sexpr Nil)])])),
-       [Const' (Sexpr (Number (Int 1)))]))));
+       [Const' (Sexpr (Number (Fraction (1, 1))))]))));
   ("semantic test 50",
     Def (Var "test",
      LambdaOpt (["x"], "y",
       Applic (Var "cons", [Var "x"; LambdaSimple ([], Set (Var "x", Var "y"))]))),
     
-    Def' (Var' (VarFree "test"),
+    Def' ((VarFree "test"),
      LambdaOpt' (["x"], "y",
       Seq'
-       [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+       [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
         ApplicTP' (Var' (VarFree "cons"),
          [BoxGet' (VarParam ("x", 0));
           LambdaSimple' ([],
@@ -771,15 +776,15 @@ let semantic_analyzer_tests = [
            LambdaSimple ([], Set (Var "x", Var "z")); Var "x"]));
         LambdaSimple (["y"], Set (Var "x", Var "y"))]))),
     
-    Def' (Var' (VarFree "test"),
+    Def' ((VarFree "test"),
      LambdaSimple' (["x"; "y"; "z"],
       Seq'
-       [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+       [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
         ApplicTP' (Var' (VarFree "list"),
          [LambdaSimple' ([],
            ApplicTP' (Var' (VarFree "list"),
             [LambdaSimple' (["x"],
-              Set' (Var' (VarParam ("x", 0)), Var' (VarBound ("z", 1, 2))));
+              Set' ((VarParam ("x", 0)), Var' (VarBound ("z", 1, 2))));
              LambdaSimple' ([],
               BoxSet' (VarBound ("x", 1, 0), Var' (VarBound ("z", 1, 2))));
              BoxGet' (VarBound ("x", 0, 0))]));
@@ -793,7 +798,7 @@ let semantic_analyzer_tests = [
     
     LambdaSimple' (["x"; "y"],
      Seq'
-      [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+      [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
        ApplicTP' (Var' (VarFree "list"),
         [LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)));
          LambdaSimple' ([], Var' (VarBound ("y", 0, 1)));
@@ -807,11 +812,11 @@ let semantic_analyzer_tests = [
     
     LambdaSimple' (["x"; "y"],
      Seq'
-      [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+      [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
        ApplicTP' (Var' (VarFree "list"),
         [LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)));
          LambdaSimple' (["z"],
-          Set' (Var' (VarBound ("y", 0, 1)), Var' (VarParam ("z", 0))));
+          Set' ((VarBound ("y", 0, 1)), Var' (VarParam ("z", 0))));
          LambdaSimple' (["z"],
           BoxSet' (VarBound ("x", 0, 0), Var' (VarParam ("z", 0))))])]));
   ("semantic test 54",
@@ -823,8 +828,8 @@ let semantic_analyzer_tests = [
     
     LambdaSimple' (["x"; "y"],
      Seq'
-      [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
-       Set' (Var' (VarParam ("y", 1)), Box' (VarParam ("y", 1)));
+      [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+       Set' ((VarParam ("y", 1)), Box' (VarParam ("y", 1)));
        ApplicTP' (Var' (VarFree "list"),
         [LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)));
          LambdaSimple' ([], BoxGet' (VarBound ("y", 0, 1)));
@@ -839,10 +844,10 @@ let semantic_analyzer_tests = [
        [LambdaSimple ([], Var "x"); LambdaSimple (["z"], Set (Var "x", Var "z"));
         LambdaSimple (["z"], Set (Var "x", Var "z"))]))),
     
-    Def' (Var' (VarFree "func"),
+    Def' ((VarFree "func"),
      LambdaOpt' ([], "x",
       Seq'
-       [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+       [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
         ApplicTP' (Var' (VarFree "list"),
          [LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)));
           LambdaSimple' (["z"],
@@ -857,52 +862,52 @@ let semantic_analyzer_tests = [
         [LambdaSimple ([], Var "x");
          LambdaSimple (["z"], Set (Var "x", Var "z"))])))),
     
-    Def' (Var' (VarFree "func"),
+    Def' ((VarFree "func"),
      LambdaOpt' ([], "x",
       LambdaSimple' (["samerib"],
        ApplicTP' (Var' (VarFree "list"),
         [LambdaSimple' ([], Var' (VarBound ("x", 1, 0)));
          LambdaSimple' (["z"],
-          Set' (Var' (VarBound ("x", 1, 0)), Var' (VarParam ("z", 0))))])))));
+          Set' ((VarBound ("x", 1, 0)), Var' (VarParam ("z", 0))))])))));
   ("semantic test 57",
     Def (Var "func",
      LambdaSimple (["x"; "y"; "z"; "w"],
       Applic (Var "list",
        [LambdaSimple ([], Var "x"); LambdaSimple ([], Var "y");
         LambdaSimple ([], Var "z"); LambdaSimple ([], Var "w");
-        LambdaSimple ([], Set (Var "x", Const (Sexpr (Number (Int 0)))));
-        LambdaSimple ([], Set (Var "y", Const (Sexpr (Number (Int 1)))));
-        LambdaSimple ([], Set (Var "z", Const (Sexpr (Number (Int 2)))));
-        LambdaSimple ([], Set (Var "w", Const (Sexpr (Number (Int 3)))))]))),
+        LambdaSimple ([], Set (Var "x", Const (Sexpr (Number (Fraction (0, 1))))));
+        LambdaSimple ([], Set (Var "y", Const (Sexpr (Number (Fraction (1, 1))))));
+        LambdaSimple ([], Set (Var "z", Const (Sexpr (Number (Fraction (2, 1))))));
+        LambdaSimple ([], Set (Var "w", Const (Sexpr (Number (Fraction (3, 1))))))]))),
     
-    Def' (Var' (VarFree "func"),
+    Def' ((VarFree "func"),
      LambdaSimple' (["x"; "y"; "z"; "w"],
       Seq'
-       [Set' (Var' (VarParam ("x", 0)), Box' (VarParam ("x", 0)));
-        Set' (Var' (VarParam ("y", 1)), Box' (VarParam ("y", 1)));
-        Set' (Var' (VarParam ("z", 2)), Box' (VarParam ("z", 2)));
-        Set' (Var' (VarParam ("w", 3)), Box' (VarParam ("w", 3)));
+       [Set' ((VarParam ("x", 0)), Box' (VarParam ("x", 0)));
+        Set' ((VarParam ("y", 1)), Box' (VarParam ("y", 1)));
+        Set' ((VarParam ("z", 2)), Box' (VarParam ("z", 2)));
+        Set' ((VarParam ("w", 3)), Box' (VarParam ("w", 3)));
         ApplicTP' (Var' (VarFree "list"),
          [LambdaSimple' ([], BoxGet' (VarBound ("x", 0, 0)));
           LambdaSimple' ([], BoxGet' (VarBound ("y", 0, 1)));
           LambdaSimple' ([], BoxGet' (VarBound ("z", 0, 2)));
           LambdaSimple' ([], BoxGet' (VarBound ("w", 0, 3)));
           LambdaSimple' ([],
-           BoxSet' (VarBound ("x", 0, 0), Const' (Sexpr (Number (Int 0)))));
+           BoxSet' (VarBound ("x", 0, 0), Const' (Sexpr (Number (Fraction (0, 1))))));
           LambdaSimple' ([],
-           BoxSet' (VarBound ("y", 0, 1), Const' (Sexpr (Number (Int 1)))));
+           BoxSet' (VarBound ("y", 0, 1), Const' (Sexpr (Number (Fraction (1, 1))))));
           LambdaSimple' ([],
-           BoxSet' (VarBound ("z", 0, 2), Const' (Sexpr (Number (Int 2)))));
+           BoxSet' (VarBound ("z", 0, 2), Const' (Sexpr (Number (Fraction (2, 1))))));
           LambdaSimple' ([],
-           BoxSet' (VarBound ("w", 0, 3), Const' (Sexpr (Number (Int 3)))))])])));
+           BoxSet' (VarBound ("w", 0, 3), Const' (Sexpr (Number (Fraction (3, 1))))))])])));
   ("semantic test 58",
     Def (Var "x",
      Applic (Var "+",
-      [Const (Sexpr (Number (Int 1))); Const (Sexpr (Number (Int 2)))])),
+      [Const (Sexpr (Number (Fraction (1, 1)))); Const (Sexpr (Number (Fraction (2, 1))))])),
     
-    Def' (Var' (VarFree "x"),
+    Def' ((VarFree "x"),
      Applic' (Var' (VarFree "+"),
-      [Const' (Sexpr (Number (Int 1))); Const' (Sexpr (Number (Int 2)))])));
+      [Const' (Sexpr (Number (Fraction (1, 1)))); Const' (Sexpr (Number (Fraction (2, 1))))])));
   ("semantic test 59",
     LambdaOpt (["x"], "y", Var "x"),
      LambdaOpt' (["x"], "y", Var' (VarParam ("x", 0))));
@@ -959,7 +964,7 @@ let semantic_analyzer_tests = [
     LambdaSimple (["x"; "y"; "z"; "a"; "b"],
       Applic (Var "f",
        [If (Applic (Var "g?", [Var "x"]),
-         If (Applic (Var ">", [Const (Sexpr (Number (Int 1))); Var "a"]),
+         If (Applic (Var ">", [Const (Sexpr (Number (Fraction (1, 1)))); Var "a"]),
           Applic (Var "h", [Var "y"]), Var "b"),
          Applic (Var "w", [Var "z"]))])),
     
@@ -968,28 +973,28 @@ let semantic_analyzer_tests = [
       [If' (Applic' (Var' (VarFree "g?"), [Var' (VarParam ("x", 0))]),
         If'
          (Applic' (Var' (VarFree ">"),
-           [Const' (Sexpr (Number (Int 1))); Var' (VarParam ("a", 3))]),
+           [Const' (Sexpr (Number (Fraction (1, 1)))); Var' (VarParam ("a", 3))]),
          Applic' (Var' (VarFree "h"), [Var' (VarParam ("y", 1))]),
          Var' (VarParam ("b", 4))),
         Applic' (Var' (VarFree "w"), [Var' (VarParam ("z", 2))]))])));
   ("semantic test 65",
     LambdaSimple (["x"; "y"; "z"; "a"; "b"],
       If (Applic (Var "g?", [Var "x"]),
-       If (Applic (Var ">", [Const (Sexpr (Number (Int 1))); Var "a"]),
+       If (Applic (Var ">", [Const (Sexpr (Number (Fraction (1, 1)))); Var "a"]),
         Applic (Var "h", [Var "y"]), Applic (Var "w", [Var "b"])),
-       If (Applic (Var "<", [Const (Sexpr (Number (Int 1))); Var "a"]),
+       If (Applic (Var "<", [Const (Sexpr (Number (Fraction (1, 1)))); Var "a"]),
         Applic (Var "w", [Var "b"]), Applic (Var "w", [Var "z"])))),
     
     LambdaSimple' (["x"; "y"; "z"; "a"; "b"],
      If' (Applic' (Var' (VarFree "g?"), [Var' (VarParam ("x", 0))]),
       If'
        (Applic' (Var' (VarFree ">"),
-         [Const' (Sexpr (Number (Int 1))); Var' (VarParam ("a", 3))]),
+         [Const' (Sexpr (Number (Fraction (1, 1)))); Var' (VarParam ("a", 3))]),
        ApplicTP' (Var' (VarFree "h"), [Var' (VarParam ("y", 1))]),
        ApplicTP' (Var' (VarFree "w"), [Var' (VarParam ("b", 4))])),
       If'
        (Applic' (Var' (VarFree "<"),
-         [Const' (Sexpr (Number (Int 1))); Var' (VarParam ("a", 3))]),
+         [Const' (Sexpr (Number (Fraction (1, 1)))); Var' (VarParam ("a", 3))]),
        ApplicTP' (Var' (VarFree "w"), [Var' (VarParam ("b", 4))]),
        ApplicTP' (Var' (VarFree "w"), [Var' (VarParam ("z", 2))])))));
   ("semantic test 66",
@@ -1022,22 +1027,22 @@ let semantic_analyzer_tests = [
   ("semantic test 68",
     Applic
       (LambdaSimple (["a"; "b"; "c"; "e"],
-        If (Applic (Var "eq?", [Var "a"; Const (Sexpr (Number (Int 5)))]),
+        If (Applic (Var "eq?", [Var "a"; Const (Sexpr (Number (Fraction (5, 1))))]),
          Applic (Var "e", [Var "a"; Var "b"]),
          Applic (Var "c", [Var "a"; Var "b"]))),
-      [Const (Sexpr (Number (Int 5))); Const (Sexpr (Number (Int 7))); Var "d";
+      [Const (Sexpr (Number (Fraction (5, 1)))); Const (Sexpr (Number (Fraction (7, 1)))); Var "d";
        Var "f"]),
     
     Applic'
      (LambdaSimple' (["a"; "b"; "c"; "e"],
        If'
         (Applic' (Var' (VarFree "eq?"),
-          [Var' (VarParam ("a", 0)); Const' (Sexpr (Number (Int 5)))]),
+          [Var' (VarParam ("a", 0)); Const' (Sexpr (Number (Fraction (5, 1))))]),
         ApplicTP' (Var' (VarParam ("e", 3)),
          [Var' (VarParam ("a", 0)); Var' (VarParam ("b", 1))]),
         ApplicTP' (Var' (VarParam ("c", 2)),
          [Var' (VarParam ("a", 0)); Var' (VarParam ("b", 1))]))),
-     [Const' (Sexpr (Number (Int 5))); Const' (Sexpr (Number (Int 7)));
+     [Const' (Sexpr (Number (Fraction (5, 1)))); Const' (Sexpr (Number (Fraction (7, 1))));
       Var' (VarFree "d"); Var' (VarFree "f")]));
   ("semantic test 69",
     Applic
@@ -1049,13 +1054,13 @@ let semantic_analyzer_tests = [
               Applic
                (LambdaSimple (["e"],
                  If
-                  (Applic (Var "eq?", [Var "a"; Const (Sexpr (Number (Int 5)))]),
+                  (Applic (Var "eq?", [Var "a"; Const (Sexpr (Number (Fraction (5, 1))))]),
                   Applic (Var "e", [Var "a"; Var "b"]),
                   Applic (Var "c", [Var "a"; Var "b"]))),
                [Var "f"])),
             [Var "d"])),
-         [Const (Sexpr (Number (Int 7)))])),
-      [Const (Sexpr (Number (Int 5)))]),
+         [Const (Sexpr (Number (Fraction (7, 1))))])),
+      [Const (Sexpr (Number (Fraction (5, 1))))]),
     
     Applic'
      (LambdaSimple' (["a"],
@@ -1067,15 +1072,15 @@ let semantic_analyzer_tests = [
               (LambdaSimple' (["e"],
                 If'
                  (Applic' (Var' (VarFree "eq?"),
-                   [Var' (VarBound ("a", 2, 0)); Const' (Sexpr (Number (Int 5)))]),
+                   [Var' (VarBound ("a", 2, 0)); Const' (Sexpr (Number (Fraction (5, 1))))]),
                  ApplicTP' (Var' (VarParam ("e", 0)),
                   [Var' (VarBound ("a", 2, 0)); Var' (VarBound ("b", 1, 0))]),
                  ApplicTP' (Var' (VarBound ("c", 0, 0)),
                   [Var' (VarBound ("a", 2, 0)); Var' (VarBound ("b", 1, 0))]))),
               [Var' (VarFree "f")])),
            [Var' (VarFree "d")])),
-        [Const' (Sexpr (Number (Int 7)))])),
-     [Const' (Sexpr (Number (Int 5)))]));
+        [Const' (Sexpr (Number (Fraction (7, 1))))])),
+     [Const' (Sexpr (Number (Fraction (5, 1))))]));
   ("semantic test 70",
     Def (Var "while",
       LambdaSimple (["test"; "body"],
@@ -1085,7 +1090,7 @@ let semantic_analyzer_tests = [
           Applic (Var "while", [Var "test"; Var "body"])],
         Const Void))),
     
-    Def' (Var' (VarFree "while"),
+    Def' ((VarFree "while"),
      LambdaSimple' (["test"; "body"],
       If' (Applic' (Var' (VarParam ("test", 0)), []),
        Seq'
@@ -1100,7 +1105,7 @@ let semantic_analyzer_tests = [
          (LambdaSimple (["c"],
            Applic
             (LambdaSimple (["e"],
-              If (Applic (Var "x", [Var ">"; Const (Sexpr (Number (Int 5)))]),
+              If (Applic (Var "x", [Var ">"; Const (Sexpr (Number (Fraction (5, 1))))]),
                LambdaSimple (["x"], Applic (Var "a", [Var "x"])),
                LambdaSimple (["x"], Applic (Var "c", [Var "x"])))),
             [Var "f"])),
@@ -1115,7 +1120,7 @@ let semantic_analyzer_tests = [
            (LambdaSimple' (["e"],
              If'
               (Applic' (Var' (VarFree "x"),
-                [Var' (VarFree ">"); Const' (Sexpr (Number (Int 5)))]),
+                [Var' (VarFree ">"); Const' (Sexpr (Number (Fraction (5, 1))))]),
               LambdaSimple' (["x"],
                ApplicTP' (Var' (VarBound ("a", 2, 0)),
                 [Var' (VarParam ("x", 0))])),
@@ -1128,7 +1133,7 @@ let semantic_analyzer_tests = [
   ("semantic test 72",
     LambdaSimple (["x"],
       LambdaOpt (["x"], "y",
-       If (Applic (Var "x", [Var ">"; Const (Sexpr (Number (Int 5)))]),
+       If (Applic (Var "x", [Var ">"; Const (Sexpr (Number (Fraction (5, 1))))]),
         LambdaSimple (["x"], Applic (Var "a", [Var "x"])),
         LambdaSimple (["x"], Applic (Var "c", [Var "x"]))))),
     
@@ -1136,7 +1141,7 @@ let semantic_analyzer_tests = [
      LambdaOpt' (["x"], "y",
       If'
        (Applic' (Var' (VarParam ("x", 0)),
-         [Var' (VarFree ">"); Const' (Sexpr (Number (Int 5)))]),
+         [Var' (VarFree ">"); Const' (Sexpr (Number (Fraction (5, 1))))]),
        LambdaSimple' (["x"],
         ApplicTP' (Var' (VarFree "a"), [Var' (VarParam ("x", 0))])),
        LambdaSimple' (["x"],
@@ -1144,7 +1149,7 @@ let semantic_analyzer_tests = [
   ("semantic test 73",
     LambdaSimple (["x"],
       LambdaOpt (["a"], "y",
-       If (Applic (Var "x", [Var ">"; Const (Sexpr (Number (Int 5)))]),
+       If (Applic (Var "x", [Var ">"; Const (Sexpr (Number (Fraction (5, 1))))]),
         LambdaSimple (["x"], Applic (Var "a", [Var "x"])),
         LambdaSimple (["x"], Applic (Var "c", [Var "x"]))))),
     
@@ -1152,7 +1157,7 @@ let semantic_analyzer_tests = [
      LambdaOpt' (["a"], "y",
       If'
        (Applic' (Var' (VarBound ("x", 0, 0)),
-         [Var' (VarFree ">"); Const' (Sexpr (Number (Int 5)))]),
+         [Var' (VarFree ">"); Const' (Sexpr (Number (Fraction (5, 1))))]),
        LambdaSimple' (["x"],
         ApplicTP' (Var' (VarBound ("a", 0, 0)), [Var' (VarParam ("x", 0))])),
        LambdaSimple' (["x"],
