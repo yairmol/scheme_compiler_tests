@@ -87,7 +87,7 @@ let expr_testable = Alcotest.testable (fun ppf expr -> (Format.fprintf ppf "%s" 
 let expr'_testable = Alcotest.testable (fun ppf expr -> (Format.fprintf ppf "%s" (string_of_expr' expr))) expr'_eq;;
 
 let map_test_suite_to_alcotest_test_suite test_suite = List.map (fun (name, input, expected) -> 
-  (name, fun () -> Alcotest.(check (expr'_testable)) "same semantic expression?" expected (Semantics.annotate_tail_calls (Semantics.annotate_lexical_addresses input)))) test_suite;;
+  (name, fun () -> Alcotest.(check (expr'_testable)) "same semantic expression?" expected (Semantics.run_semantics input))) test_suite;;
 
 let () =
   let open Alcotest in
