@@ -41,11 +41,11 @@ let concrete_syntax_string_of_sexpr sexpr =
 let rec string_of_expr expr = match expr with
     | Const Void -> "(void)"
     | Const (Sexpr s) -> (match s with
-      | Number n -> (string_of_sexpr s)
-      | String str -> (string_of_sexpr s)
-      | Char c -> (string_of_sexpr s)
-      | Bool b -> (string_of_sexpr s)
-      | s -> "'" ^ (string_of_sexpr s))
+      | Number n -> (concrete_syntax_string_of_sexpr s)
+      | String str -> (concrete_syntax_string_of_sexpr s)
+      | Char c -> (concrete_syntax_string_of_sexpr s)
+      | Bool b -> (concrete_syntax_string_of_sexpr s)
+      | s -> "'" ^ (concrete_syntax_string_of_sexpr s))
     | Var v -> v
     | If (test, _then, _else) -> "(if " ^ (string_of_expr test) ^ " " ^ (string_of_expr _then) ^ " " ^ (string_of_expr _else) ^ ")"
     | Seq exprs -> (List.fold_left (fun seq expr -> seq ^ " " ^ (string_of_expr expr)) "(begin" exprs) ^ ")"
@@ -87,7 +87,7 @@ let expr_testable = Alcotest.testable (fun ppf expr -> (Format.fprintf ppf "%s" 
 let expr'_testable = Alcotest.testable (fun ppf expr -> (Format.fprintf ppf "%s" (string_of_expr' expr))) expr'_eq;;
 
 let map_test_suite_to_alcotest_test_suite test_suite = List.map (fun (name, input, expected) -> 
-  (name, fun () -> Alcotest.(check (expr'_testable)) "same semantic expression?" expected (Semantics.annotate_tail_calls (Semantics.annotate_lexical_addresses input)))) test_suite;;
+  (name, fun () -> Alcotest.(check (expr'_testable)) "same semantic expression?" expected (Semantics.box_set (Semantics.annotate_tail_calls (Semantics.annotate_lexical_addresses input))))) test_suite;;
 
 let () =
   let open Alcotest in
