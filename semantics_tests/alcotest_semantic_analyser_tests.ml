@@ -86,11 +86,13 @@ let expr_testable = Alcotest.testable (fun ppf expr -> (Format.fprintf ppf "%s" 
 
 let expr'_testable = Alcotest.testable (fun ppf expr -> (Format.fprintf ppf "%s" (string_of_expr' expr))) expr'_eq;;
 
-let map_test_suite_to_alcotest_test_suite test_suite = List.map (fun (name, input, expected) -> 
-  (name, fun () -> Alcotest.(check (expr'_testable)) "same semantic expression?" expected (Semantics.box_set (Semantics.annotate_tail_calls (Semantics.annotate_lexical_addresses input))))) test_suite;;
+let map_test_suite_to_alcotest_test_suite test_suite func = List.map (fun (name, input, expected) -> 
+  (name, fun () -> Alcotest.(check (expr'_testable)) "same semantic expression?" expected (func input))) test_suite;;
 
 let () =
   let open Alcotest in
   run "Semantics" [
-      "test semantic_analyzer", (List.map (fun (desc, test) -> test_case desc `Quick test) (map_test_suite_to_alcotest_test_suite semantic_analyzer_tests_suite));
+      "test lexical addressing and tail call annotations", (List.map (fun (desc, test) -> test_case desc `Quick test) (map_test_suite_to_alcotest_test_suite lexical_addresses_and_tail_calls_annotation_test_suite (fun x -> Semantics.annotate_tail_calls (Semantics.annotate_lexical_addresses x))));
+      "test boxing", (List.map (fun (desc, test) -> test_case desc `Quick test) (map_test_suite_to_alcotest_test_suite box_test_suite Semantics.run_semantics));
+      "test semantic_analyzer", (List.map (fun (desc, test) -> test_case desc `Quick test) (map_test_suite_to_alcotest_test_suite semantic_analyzer_tests_suite Semantics.run_semantics));
     ]
