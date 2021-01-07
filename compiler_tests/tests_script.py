@@ -19,7 +19,7 @@ class CompilerTests(unittest.TestCase):
 def create_tests():
     makefile_path = "../../Makefile"
     file_names = os.listdir(".")
-    for i in range(get_max_test_num()):
+    for i in range(0, get_max_test_num()):
         if f"{i}.scm" not in file_names:
             continue
         def test(self):
@@ -30,7 +30,8 @@ def create_tests():
                 unset o1; unset o2""")
             with open("test.scm", "r") as comparison, open("res.scm", "r") as result:
                 result = result.readline()
-                assert result == "#t", f"result was {result}. reason: {comparison.read()}"
+                assert result.find("#t") != -1, f"result was {result}. reason: {comparison.read()}"
+                os.remove(f"{i}")
         setattr(CompilerTests, f"test_{i}", test)
 
 if __name__ == "__main__":
