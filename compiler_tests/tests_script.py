@@ -14,12 +14,15 @@ def get_max_test_num():
 
 
 class CompilerTests(unittest.TestCase):
-    def test_compiler(self):
-        makefile_path = "../../Makefile"
-        file_names = os.listdir(".")
-        for i in range(get_max_test_num()):
-            if f"{i}.scm" not in file_names:
-                continue
+    pass
+
+def create_tests():
+    makefile_path = "../../Makefile"
+    file_names = os.listdir(".")
+    for i in range(get_max_test_num()):
+        if f"{i}.scm" not in file_names:
+            continue
+        def test(self):
             os.system(f"""make -f {makefile_path} {i};\\
                 o1=`scheme -q < {i}.scm`; o2=`./{i}`;\\
                 echo \"(equal? '($o1) '($o2))\" > test.scm;\\
@@ -28,6 +31,8 @@ class CompilerTests(unittest.TestCase):
             with open("test.scm", "r") as comparison, open("res.scm", "r") as result:
                 result = result.readline()
                 assert result == "#t", f"result was {result}. reason: {comparison.read()}"
+        setattr(CompilerTests, f"test_{i}", test)
 
 if __name__ == "__main__":
+    create_tests()
     unittest.main()
