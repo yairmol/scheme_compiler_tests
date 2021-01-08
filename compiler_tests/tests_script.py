@@ -21,11 +21,11 @@ class CompilerTests(unittest.TestCase):
             if f"{i}.scm" not in file_names:
                 continue
             os.system("unset o1; unset o2")
-            os.system(f"""make -f {makefile_path} {i};\\
-                o1=`scheme -q < {i}.scm`; o2=`./{i}`;\\
-                echo \"(equal? '($o1) '($o2))\" > test.scm;\\
-                scheme -q < test.scm > res.scm;
-                unset o1; unset o2""")
+            os.system(f"make -f {makefile_path} {i}")
+            os.system(f"o1=`scheme -q < {i}.scm`; o2=`./{i}`")
+            os.system(f"echo \"(equal? '($o1) '($o2))\" > test.scm")
+            os.system("scheme -q < test.scm > res.scm")
+            os.system("unset o1; unset o2")
             with open("test.scm", "r") as comparison, open("res.scm", "r") as result:
                 result = result.readline()
                 comparison = comparison.read()
@@ -46,4 +46,6 @@ if __name__ == "__main__":
     try:
         unittest.main()
     except Exception:
+        pass
+    finally:
         clean_up()
