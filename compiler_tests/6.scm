@@ -1,5 +1,3 @@
-(define x (+ 2))
-((lambda (x) 
-	(set! x (+ 2 3))
-	x) x)
-	
+(eq? ((lambda (x . y)
+	(cons x y)) 'a 'b 'c 'd)
+	'(a b c d))

@@ -1,6 +1,3 @@
-(define length
-	(lambda (l)
-		(if (null? l) 0
-			(+ 1 (length (cdr l))))))
-
-(= (length ''''''''a) (length ``````````a))
+(((lambda (x) 
+	(lambda (y . z) 
+		(if `notbool (+ x  (* y (car z)) (car (cdr z)))))) 9) 10 11 12)

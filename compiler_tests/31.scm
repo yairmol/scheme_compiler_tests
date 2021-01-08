@@ -1,3 +1,1 @@
-(((lambda (x) 
-	(lambda (y . z) 
-		(if `notbool (+ x  (* y (car z)) (car (cdr z)))))) 9) 10 11 12)
+((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s s) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) 'mary 'had 'a 'little 'lambda)

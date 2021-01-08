@@ -1,3 +1,5 @@
-(if (zero? 0)
-	(or #f #t)
-	0)
+(letrec ((loop (lambda (r)
+				(if (= r 0)
+					0
+					(loop (- r 1))))))
+	(loop 220000))

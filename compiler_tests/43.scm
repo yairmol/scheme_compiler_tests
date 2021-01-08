@@ -1,1 +1,11 @@
-((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s ((lambda s s) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) s)) 'mary 'had 'a 'little 'lambda)
+(define foo (lambda (x)
+				(cons
+					(begin (lambda () (set! x 1) 'void))
+					(lambda () x))))
+(define p (foo 2))
+
+(let* ((a ((cdr p)))
+      (b ((car p)))
+      (c ((cdr p))))
+    (cons a (cons b (cons c '()))))
+		

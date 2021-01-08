@@ -1,1 +1,11 @@
-(/ (+ 0.2 (* 2 (- 0.6667 0.2667))) (/ 1.0 2))
+(define a 'alpha)
+(define b 'beta)
+
+(define l ((lambda (x y)
+               (list 
+                 (lambda () (set! x y))
+                 (lambda () (cons x y)))) a b))
+((car (cdr l)))
+((car l))
+((car (cdr l)))
+

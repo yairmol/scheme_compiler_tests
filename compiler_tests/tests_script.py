@@ -17,25 +17,25 @@ class CompilerTests(unittest.TestCase):
     def test_compiler(self):
         makefile_path = "../../Makefile"
         file_names = os.listdir(".")
-        for i in range(get_max_test_num()):
+        for i in range(get_max_test_num()+1):
             if f"{i}.scm" not in file_names:
                 continue
             os.system("unset o1; unset o2")
-            os.system(f"make -f {makefile_path} {i}")
-            os.system(f"o1=`scheme -q < {i}.scm`; o2=`./{i}`")
-            os.system(f"echo \"(equal? '($o1) '($o2))\" > test.scm")
-            os.system("scheme -q < test.scm > res.scm")
-            os.system("unset o1; unset o2")
+            os.system(f"""make -f {makefile_path} {i};\
+o1=`scheme -q < {i}.scm`; o2=`./{i}`;\
+echo "(equal? '($o1) '($o2))" > test.scm;\
+scheme -q < test.scm > res.scm;\
+unset o1; unset o2""")
             with open("test.scm", "r") as comparison, open("res.scm", "r") as result:
                 result = result.readline()
-                comparison = comparison.read()
+                comparison = comparison.readline()
                 print(f"comparing {comparison}. result {result}.")
                 assert result.find("#t") != -1, f"result was {result}. reason: {comparison}"
 
 def clean_up():
     files1 = os.listdir("../..")
     files2 = os.listdir(".")
-    for i in range(get_max_test_num()):
+    for i in range(get_max_test_num()+1):
         f1, f2, f3 = f"{i}.s", f"{i}.o", f"{i}"
         for f in {f1, f2, f3}.intersection(files1):
             os.remove(f"../../{f}")

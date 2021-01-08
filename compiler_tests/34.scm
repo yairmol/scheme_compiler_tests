@@ -1,5 +1,3 @@
-((lambda (x . y)
-     ((lambda ()
-        (set-cdr! x y)))
-     x)
-   (cons 1 2))
+(if (zero? 0)
+	(or #f #t)
+	0)
