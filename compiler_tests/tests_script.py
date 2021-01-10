@@ -20,12 +20,10 @@ class CompilerTests(unittest.TestCase):
         for i in range(get_max_test_num()):
             if f"{i}.scm" not in file_names:
                 continue
-            os.system("unset o1; unset o2")
-            os.system(f"""make -f {makefile_path} {i};\\
-                o1=`scheme -q < {i}.scm`; o2=`./{i}`;\\
-                echo \"(equal? '($o1) '($o2))\" > test.scm;\\
-                scheme -q < test.scm > res.scm;
-                unset o1; unset o2""")
+            os.system(f"make -f {makefile_path} {i}; scheme -q < {i}.scm > chez_result.scm; ./{i} > my_result.scm")
+            with open("chez_result.scm", "r") as chez_result, open("my_result.scm", "r") as my_result, open("test.scm", "w+") as test:
+                test.write(f"(equal? '({chez_result.read()[:-1]}) '({my_result.read()[:-1]}))")
+            os.system("scheme -q < test.scm > res.scm")
             with open("test.scm", "r") as comparison, open("res.scm", "r") as result:
                 result = result.readline()
                 comparison = comparison.read()
@@ -43,7 +41,5 @@ def clean_up():
             os.remove(f"{f}")
 
 if __name__ == "__main__":
-    try:
-        unittest.main()
-    except Exception:
-        clean_up()
+    unittest.main()
+    clean_up()
