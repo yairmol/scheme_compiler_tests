@@ -1,1 +1,3 @@
-((lambda () ((lambda (a b c d e) e) 'a 'b 'c 'd 'e)))
+(eq? ((lambda (x . y)
+	(cons x y)) 'a 'b 'c 'd)
+	'(a b c d))

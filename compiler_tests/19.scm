@@ -1,5 +1,8 @@
-(((((lambda (x)
-    (lambda (y)
-      (lambda (z)
-        (lambda w
-          (append x y z w))))) '(a)) '(b)) '(c)) 'd 'e)
+(define str (make-string 5 #\space))
+
+(string-set! str 0 #\t)
+(string-set! str 1 #\l)
+(string-set! str 3 #\n) 
+(string-set! str 4 #\newline)
+
+str
