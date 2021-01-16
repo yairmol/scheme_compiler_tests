@@ -1,3 +1,7 @@
+#use "topfind";;
+#directory "../";;
+#directory "../../";;
+
 #use "semantic-analyser.ml";;
 
 let box_test_suite = [

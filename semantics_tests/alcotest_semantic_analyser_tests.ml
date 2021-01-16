@@ -19,7 +19,7 @@ let rec string_of_sexpr se =
 
 let concrete_syntax_string_of_sexpr sexpr = 
   let string_of_number n = match n with
-    | Fraction((a, b)) ->  (string_of_int a) ^ "/" ^ (string_of_int b)
+    | Fraction((a, b)) -> if b = 1 then (string_of_int a) else (string_of_int a) ^ "/" ^ (string_of_int b)
     | Float(f) -> (string_of_float f) in  
   let rec string_of_sexpr1 sexpr inside = match sexpr with
     | Bool(b) -> if b then "#t" else "#f"

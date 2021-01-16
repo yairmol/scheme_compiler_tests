@@ -1,3 +1,7 @@
+#use "topfind";;
+#directory "../";;
+#directory "../../";;
+
 #use "semantic-analyser.ml";;
 
 let lexical_addresses_and_tail_calls_annotation_test_suite = [
